@@ -79,14 +79,17 @@ void pressEnterToContinue() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// === Scan current directory for supported files ===
-std::vector<std::string> getSupportedFiles() {
+// === Scan current directory for supported files, skip dashboard source & binary ===
+std::vector<std::string> getSupportedFiles(const std::string& selfSource, const std::string& selfBinary) {
     std::vector<std::string> files;
     for (const auto& entry : fs::directory_iterator(".")) {
         if (entry.is_regular_file()) {
             std::string ext = entry.path().extension().string();
+            std::string filename = entry.path().filename().string();
+
             if (commandMap.find(ext) != commandMap.end()) {
-                files.push_back(entry.path().filename().string());
+                if (filename == selfSource || filename == selfBinary) continue; // skip self
+                files.push_back(filename);
             }
         }
     }
@@ -153,21 +156,25 @@ void runFile(const std::string& filename) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Detect executable name and its own .cpp source
+    std::string exeName = fs::path(argv[0]).filename().string();
+    std::string selfSource = fs::path(argv[0]).stem().string() + ".cpp";
+
     while (true) {
         system(CLEAR);
         std::cout << Color::cyan << Color::bold
         << "——⟪LycanDev Code Dashboard⟫——"
         << Color::reset << "\n";
 
-        auto files = getSupportedFiles();
+        auto files = getSupportedFiles(selfSource, exeName);
 
         std::cout << "\n" << Color::green << "Program List:" << Color::reset << "\n";
         std::cout << Color::yellow << "0" << Color::reset << " - Exit\n";
 
         for (size_t i = 0; i < files.size(); ++i) {
             std::cout << Color::yellow << (i + 1) << Color::reset
-        << " - " << files[i] << "\n";
+            << " - " << files[i] << "\n";
         }
 
         std::cout << Color::yellow << (files.size() + 1) << Color::reset
