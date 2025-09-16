@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LycanDev Glitch Dark Mode</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    html, body {
+        background: #0a0a0a;
+        color: #eee;
+        font-family: 'Share Tech Mono', monospace, sans-serif;
+        text-shadow: 0 0 6px rgba(0, 200, 255, 0.6);
+        transition: color 0.2s, text-shadow 0.2s;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    /* Faint grid background */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image:
+        linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: -1;
+        animation: gridPulse 6s infinite;
+    }
+
+    /* Links / buttons */
+    a, button {
+        color: #0ff;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-shadow: 0 0 8px rgba(0,255,255,0.8);
+        transition: all 0.2s ease-in-out;
+    }
+    a:hover, button:hover {
+        color: #fff;
+        text-shadow: 0 0 12px rgba(0,200,255,1), 0 0 20px rgba(255,0,200,0.6);
+    }
+
+    /* Keyframes */
+    @keyframes gridPulse {
+        0%, 100% { opacity: 0.4; transform: scale(1) skew(0deg,0deg); }
+        50% { opacity: 0.6; transform: scale(1.02) skew(0.5deg,0.5deg); }
+    }
+
+    @keyframes ghostEcho {
+        0% { text-shadow: none; }
+        20% { text-shadow:
+            2px 2px 0 rgba(0,255,255,0.7),
+        -2px -2px 0 rgba(255,0,200,0.7); }
+        40% { text-shadow:
+            1px -2px 0 rgba(255,0,100,0.7),
+            -1px 2px 0 rgba(0,200,255,0.7); }
+        60% { text-shadow:
+            -2px 1px 0 rgba(0,255,180,0.7),
+                2px -1px 0 rgba(200,0,255,0.7); }
+        80% { text-shadow:
+                1px 1px 0 rgba(255,255,255,0.8); }
+        100% { text-shadow: 0 0 6px rgba(0,200,255,0.6); }
+    }
+
+    .glitchy {
+        animation: ghostEcho 0.4s steps(2, end);
+    }
+  </style>
+</head>
+<body>
+  <!-- Blank body — ready for injection -->
+    <script>
+    // === LycanDev Glitch Driver ===
+    function triggerGlitch(el) {
+        el.classList.add("glitchy");
+        setTimeout(() => el.classList.remove("glitchy"), 400);
+    }
+
+    function randomGlitch() {
+    const els = document.querySelectorAll("h1,h2,h3,p,a,button,span");
+      if (!els.length) return; // stay idle if no elements exist
+      const target = els[Math.floor(Math.random() * els.length)];
+    triggerGlitch(target);
+
+      // Global grid flicker
+    document.body.style.animation = "gridPulse 0.5s linear";
+    setTimeout(() => document.body.style.animation = "", 500);
+
+      setTimeout(randomGlitch, Math.random() * 4000 + 1000);
+    }
+    randomGlitch();
+    </script>
+</body>
+</html>
